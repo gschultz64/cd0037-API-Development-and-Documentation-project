@@ -240,7 +240,7 @@ def create_app(test_config=None):
     one question at a time is displayed, the user is allowed to answer
     and shown whether they were correct or not.
     """
-    @app.route("/categories/<int:quiz_category>/questions", methods=["POST"])
+    @app.route("/quizzes", methods=["POST"])
     def quiz(quiz_category, previous_questions):
         current_category = Category.query.filter(Category.id == quiz_category).one_or_none()
         current_question = Question.query.filter(Question.category == quiz_category).not_in(previous_questions)
