@@ -133,36 +133,26 @@ class QuestionView extends Component {
           <h2
             onClick={() => {
               this.getQuestions();
-              console.log(this.state.categories[0].type);
             }}
           >
             Categories
           </h2>
-          {this.state.categories.map((id) => (
-            <ul 
-              onLoad={() => {
-                let catId = id;
-                this.setState({
-                  catId: catId
-                })
-              }}
-            >
+          <ul
+          >
+            {this.state.categories.map((id) => (
               <li
-                key={id}
-                onClick={() => {
-                  // this.getByCategory(this.state.catId.id);
-                  console.log(this.state.catId);
-                }}
+                key={id.id.toString()}
+                value={id.id}
               >
-                {/* {this.state.catId.type} */}
+                {id.type}
                 <img
-                  className="category"
-                  alt=""
-                  src={`$/* {this.state.currentCategory.toLowerCase()} */.svg`}
+                  className={id.type}
+                  alt={id.type}
+                  src={`$/* {id.type.toLowerCase()} */.svg`}
                 />
               </li>
-            </ul>
-          ))}
+            ))}
+          </ul>
           <Search submitSearch={this.submitSearch} />
         </div>
         <div className="questions-list">

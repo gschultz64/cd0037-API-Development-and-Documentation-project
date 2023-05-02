@@ -15,7 +15,7 @@ class Question extends Component {
 
   render() {
     const { question, answer, category, difficulty } = this.props;
-    console.log(category);
+    // console.log(category);
     let categoryName = '';
     if (category !== undefined) {
       categoryName = category.type;
