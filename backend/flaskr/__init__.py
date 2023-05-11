@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
@@ -62,8 +62,6 @@ def create_app(test_config=None):
         # current_category = Question.query.filter(Question.category == category_id).one_or_none()
         all_categories = Category.query.order_by(Category.id).all()
         categories = [category.format() for category in all_categories]
-        print('Categories: ', categories)
-        print('Questions: ', current_questions)
 
         if len(current_questions) == 0:
             abort(404)
@@ -103,59 +101,18 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    """
-    @TODO:
-    Create an endpoint to POST a new question,
-    which will require the question and answer text,
-    category, and difficulty score.
 
-    TEST: When you submit a question on the "Add" tab,
-    the form will clear and the question will appear at the end of the last page
-    of the questions list in the "List" tab.
-    """
     @app.route("/questions", methods=["POST"])
     def create_question():
         body = request.get_json()
+        new_question = body.get("question", None)
+        new_answer = body.get("answer", None)
+        new_difficulty = body.get("difficulty", None)
+        new_category = body.get("category", None)
+        
+        search = request.get_json().get("searchTerm", None)
 
-        question = body.get("question", None)
-        answer = body.get("answer", None)
-        difficulty = body.get("difficulty", None)
-        category = body.get("category", None)
-
-        try:  
-            question = Question(question=question, answer=answer, difficulty=difficulty, category=category)
-            question.insert()
-
-            selection = Question.query.order_by(Question.id).all()
-            current_questions = paginate_questions(request, selection)
-
-            return jsonify(
-                {
-                    "success": True,
-                    "created": question.id,
-                    "questions": current_questions,
-                    "total_questions": len(question.query.all()),
-                }
-            )
-
-        except:
-            abort(422)
-
-    """
-    @TODO:
-    Create a POST endpoint to get questions based on a search term.
-    It should return any questions for whom the search term
-    is a substring of the question.
-
-    TEST: Search by any phrase. The questions list will update to include
-    only question that include that string within their question.
-    Try using the word "title" to start.
-    """
-    @app.route("/questions", methods=["POST"])
-    def search_question():
-        search = request.get_json().get("search", None)
-
-        try:  
+        try: 
             if search:
                 selection = Question.query.order_by(Question.id).filter(
                     Question.question.ilike("%{}%".format(search))
@@ -169,12 +126,28 @@ def create_app(test_config=None):
                         "total_questions": len(selection.all()),
                     }
                 )
+            else: 
+                question = Question(question=new_question, answer=new_answer, category=new_category, difficulty=new_difficulty)
+                question.insert()
+
+                selection = Question.query.order_by(Question.id).all()
+                current_questions = paginate_questions(request, selection)
+
+                return jsonify(
+                    {
+                        "success": True,
+                        "created": question.id,
+                        "questions": current_questions,
+                        "total_questions": len(question.query.all()),
+                    }
+                )
         except:
             abort(422)
 
+
     """
     @TODO:
-    Create a GET endpoint to get questions based on category.
+    Fix front end, backend route works
 
     TEST: In the "List" tab / main screen, clicking on one of the
     categories in the left column will cause only questions of that
